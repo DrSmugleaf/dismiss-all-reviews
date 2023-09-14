@@ -4,7 +4,7 @@
 // @version      0.1
 // @description
 // @author       DrSmugleaf
-// @match        https://github.com/space-wizards/*/pull/*
+// @match        https://github.com/*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=github.com
 // @grant        none
 // ==/UserScript==
@@ -12,9 +12,19 @@
 (function() {
     'use strict';
 
+    const urlRegex = new RegExp(/github\.com\/.*\/.*\/pull\/.*/);
     const changesRegex = new RegExp(/\d+ change(?:s{0,1}) requested/);
 
-    setTimeout(() => {
+    function createButton() {
+        const urlMatch = urlRegex.exec(window.location.href);
+        if (!urlMatch?.[0]) {
+            return;
+        }
+
+        if (document.getElementById("dismissAllButton")) {
+            return;
+        }
+
         const requested = document.querySelector("#partial-pull-merging > div.merge-pr.js-merge-pr.js-details-container.Details.is-squashing.is-updating-via-merge > div.js-merge-message-container > div > div > div > div:nth-child(1) > div.merge-status-list > details:nth-child(1) > summary > div > div.color-fg-muted.mr-3.css-truncate.css-truncate-target.flex-auto.flex-self-start > strong");
         if (!requested) {
             return;
@@ -32,6 +42,7 @@
         }
 
         const dismissAll = document.createElement("button");
+        dismissAll.id = "dismissAllButton";
         dismissAll.className = "dismissAllButton";
         dismissAll.innerText = "Dismiss All";
 
@@ -40,7 +51,7 @@
         dismissAll.style.borderRadius = "6px";
         dismissAll.style.backgroundColor = "#238636";
 
-        dismissAll.onclick = () => {
+        dismissAll.onclick = e => {
             const dismissInputs = document.querySelectorAll("#partial-pull-merging > div.merge-pr.js-merge-pr.js-details-container.Details.is-squashing.is-updating-via-merge > div.js-merge-message-container > div > div > div > div:nth-child(1) > div.merge-status-list > details > div > form > div > div.TableObject-item.TableObject-item--primary > input");
             dismissInputs.forEach(input => {
                 input.value = "outdated";
@@ -53,5 +64,12 @@
         };
 
         buttonContainer.insertBefore(dismissAll, dismissDropdown);
-    }, 2000)
+    }
+
+    function loopCreateButton() {
+        createButton();
+        setTimeout(loopCreateButton, 1000);
+    }
+
+    loopCreateButton();
 })();
