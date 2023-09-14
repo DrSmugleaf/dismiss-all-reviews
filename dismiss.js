@@ -32,7 +32,7 @@
 
         const match = changesRegex.exec(requested.textContent);
         if (!match?.[0]) {
-            return;
+           return;
         }
 
         const buttonContainer = document.querySelector("#partial-pull-merging > div.merge-pr.js-merge-pr.js-details-container.Details.is-squashing.is-updating-via-merge > div.js-merge-message-container > div > div > div > div:nth-child(1) > div.merge-status-list > details:nth-child(1) > summary > div");
@@ -52,13 +52,14 @@
         dismissAll.style.backgroundColor = "#238636";
 
         dismissAll.onclick = e => {
-            const dismissInputs = document.querySelectorAll("#partial-pull-merging > div.merge-pr.js-merge-pr.js-details-container.Details.is-squashing.is-updating-via-merge > div.js-merge-message-container > div > div > div > div:nth-child(1) > div.merge-status-list > details > div > form > div > div.TableObject-item.TableObject-item--primary > input");
-            dismissInputs.forEach(input => {
-                input.value = "outdated";
-            });
-
             const dismissButtons = document.querySelectorAll("#partial-pull-merging > div.merge-pr.js-merge-pr.js-details-container.Details.is-squashing.is-updating-via-merge > div.js-merge-message-container > div > div > div > div:nth-child(1) > div.merge-status-list > details > div > form");
             dismissButtons.forEach(dismiss => {
+                const dismissInput = dismiss.querySelector(":scope > div > div.TableObject-item.TableObject-item--primary > input");
+                if (!dismissInput || dismissInput.placeholder === "Why are you dismissing your review?") {
+                    return;
+                }
+
+                dismissInput.value = "outdated";
                 dismiss.submit();
             });
         };
