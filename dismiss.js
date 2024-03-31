@@ -61,7 +61,6 @@
                 const details = section.parentElement.parentElement.parentElement.parentElement;
                 details.querySelectorAll(":scope > div > form").forEach(review => {
                     const dismissInput = review.querySelector(":scope > div > div.TableObject-item.TableObject-item--primary > input");
-                    console.log(review);
                     if (!dismissInput || dismissInput.placeholder === "Why are you dismissing your review?") {
                         return;
                     }
